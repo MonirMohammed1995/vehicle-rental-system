@@ -7,10 +7,15 @@ export interface JwtPayload {
   role: string;
 }
 
-export const signJwt = (payload: object, expiresIn = "1d") => {
-  return jwt.sign(payload, ENV.JWT_SECRET, { expiresIn });
+export const signJwt = (
+  payload: JwtPayload,
+  expiresIn: string = "1d"
+): string => {
+  return jwt.sign(payload, ENV.JWT_SECRET as string, {
+    expiresIn,
+  });
 };
 
-export const verifyJwt = (token: string) => {
-  return jwt.verify(token, ENV.JWT_SECRET) as JwtPayload;
+export const verifyJwt = (token: string): JwtPayload => {
+  return jwt.verify(token, ENV.JWT_SECRET as string) as JwtPayload;
 };

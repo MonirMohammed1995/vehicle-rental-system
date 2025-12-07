@@ -45,7 +45,6 @@ export const updateVehicle = async (req: Request, res: Response) => {
 export const deleteVehicle = async (req: Request, res: Response) => {
   try {
     const vehicleId = Number(req.params.vehicleId);
-    // check active bookings
     const { rows } = await (await import("../config/db")).pool.query(`SELECT id FROM bookings WHERE vehicle_id=$1 AND status='active' LIMIT 1`, [vehicleId]);
     if (rows.length) return res.status(400).json({ message: "Vehicle has active bookings" });
     await VehiclesService.remove(vehicleId);

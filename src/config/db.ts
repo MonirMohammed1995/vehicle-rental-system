@@ -48,9 +48,9 @@ export const initDB = async () => {
       const hashed = await bcrypt.hash("admin123", salt);
       await pool.query(
         `INSERT INTO users(name,email,password,phone,role) VALUES($1,$2,$3,$4,$5)`,
-        ["Admin User", "admin@example.com", hashed, "0000000000", "admin"]
+        ["Admin User", "admin@gamil.com", hashed, "0000000000", "admin"]
       );
-      console.log("Default admin created: admin@example.com / admin123");
+      console.log("Default admin created: admin@gmail.com / admin1234");
     }
 
     console.log("DB initialized");
