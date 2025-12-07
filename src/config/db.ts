@@ -1,5 +1,6 @@
 import { Pool } from "pg";
 import { ENV } from "./env";
+import bcrypt from "bcrypt";
 
 export const pool = new Pool({
   connectionString: ENV.CONNECTION_STR,
@@ -40,17 +41,21 @@ export const initDB = async () => {
       );
     `);
 
-    // Create default admin if none exists
+    // create default admin if none exists
     const { rows } = await pool.query(`SELECT id FROM users WHERE role='admin' LIMIT 1`);
     if (rows.length === 0) {
-      const bcrypt = require("bcrypt");
-      const salt = ENV.BCRYPT_SALT_ROUNDS;
-      const hashed = await bcrypt.hash("admin123", salt);
+      if (!ENV.JWT_SECRET) {
+        // still create admin even if JWT secret missing, but warn
+        console.warn("WARNING: JWT_SECRET is not set. Set it in .env for production.");
+      }
+      const saltRounds = Number(ENV.BCRYPT_SALT_ROUNDS) || 10;
+      const hashed = await bcrypt.hash("admin123", saltRounds);
+
       await pool.query(
-        `INSERT INTO users(name,email,password,phone,role) VALUES($1,$2,$3,$4,$5)`,
-        ["Admin User", "admin@gamil.com", hashed, "0000000000", "admin"]
+        `INSERT INTO users (name, email, password, phone, role) VALUES ($1,$2,$3,$4,$5)`,
+        ["Admin User", "admin@example.com", hashed, "0000000000", "admin"]
       );
-      console.log("Default admin created: admin@gmail.com / admin1234");
+      console.log("Default admin created: admin@example.com / admin123");
     }
 
     console.log("DB initialized");

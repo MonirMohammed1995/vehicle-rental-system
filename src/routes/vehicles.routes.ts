@@ -9,5 +9,4 @@ router.get("/", listVehicles);
 router.get("/:vehicleId", getVehicle);
 router.put("/:vehicleId", authMiddleware, authorize(["admin"]), updateVehicle);
 router.delete("/:vehicleId", authMiddleware, authorize(["admin"]), deleteVehicle);
-
 export default router;

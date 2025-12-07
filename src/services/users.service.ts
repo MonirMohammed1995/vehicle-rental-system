@@ -3,18 +3,17 @@ import { hashPassword } from "../utils/hash";
 
 export class UsersService {
   static async listAll() {
-    const r = await pool.query(`SELECT id,name,email,phone,role,created_at FROM users ORDER BY id`);
+    const r = await pool.query("SELECT id,name,email,phone,role,created_at FROM users ORDER BY id");
     return r.rows;
   }
 
   static async getById(id: number) {
-    const r = await pool.query(`SELECT id,name,email,phone,role,created_at FROM users WHERE id=$1`, [id]);
+    const r = await pool.query("SELECT id,name,email,phone,role,created_at FROM users WHERE id=$1", [id]);
     if (!r.rows.length) throw new Error("User not found");
     return r.rows[0];
   }
 
   static async update(requester: { id: number; role: string }, id: number, payload: Partial<any>) {
-    // permission check
     if (requester.role !== "admin" && requester.id !== id) throw new Error("Forbidden");
 
     const fields: string[] = [];
@@ -40,6 +39,6 @@ export class UsersService {
   }
 
   static async remove(id: number) {
-    await pool.query(`DELETE FROM users WHERE id=$1`, [id]);
+    await pool.query("DELETE FROM users WHERE id=$1", [id]);
   }
 }

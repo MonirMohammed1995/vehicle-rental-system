@@ -6,7 +6,7 @@ function dateOnly(dateStr: string) {
 
 export class BookingsService {
   static async create(customerId: number, vehicleId: number, rentStart: string, rentEnd: string) {
-    const vq = await pool.query(`SELECT * FROM vehicles WHERE id=$1`, [vehicleId]);
+    const vq = await pool.query("SELECT * FROM vehicles WHERE id=$1", [vehicleId]);
     if (!vq.rows.length) throw new Error("Vehicle not found");
     const vehicle = vq.rows[0];
     if (vehicle.availability_status !== "available") throw new Error("Vehicle not available");
@@ -25,7 +25,7 @@ export class BookingsService {
         `INSERT INTO bookings(customer_id,vehicle_id,rent_start_date,rent_end_date,total_price,status) VALUES($1,$2,$3,$4,$5,'active') RETURNING *`,
         [customerId, vehicleId, rentStart, rentEnd, total_price]
       );
-      await client.query(`UPDATE vehicles SET availability_status='booked' WHERE id=$1`, [vehicleId]);
+      await client.query("UPDATE vehicles SET availability_status='booked' WHERE id=$1", [vehicleId]);
       await client.query("COMMIT");
       return br.rows[0];
     } catch (err) {
@@ -38,16 +38,16 @@ export class BookingsService {
 
   static async listForUser(user: { id: number; role: string }) {
     if (user.role === "admin") {
-      const r = await pool.query(`SELECT * FROM bookings ORDER BY id`);
+      const r = await pool.query("SELECT * FROM bookings ORDER BY id");
       return r.rows;
     } else {
-      const r = await pool.query(`SELECT * FROM bookings WHERE customer_id=$1 ORDER BY id`, [user.id]);
+      const r = await pool.query("SELECT * FROM bookings WHERE customer_id=$1 ORDER BY id", [user.id]);
       return r.rows;
     }
   }
 
   static async cancel(bookingId: number, requester: { id: number; role: string }) {
-    const r = await pool.query(`SELECT * FROM bookings WHERE id=$1`, [bookingId]);
+    const r = await pool.query("SELECT * FROM bookings WHERE id=$1", [bookingId]);
     if (!r.rows.length) throw new Error("Booking not found");
     const booking = r.rows[0];
 
@@ -57,8 +57,8 @@ export class BookingsService {
     const client = await pool.connect();
     try {
       await client.query("BEGIN");
-      await client.query(`UPDATE bookings SET status='cancelled' WHERE id=$1`, [bookingId]);
-      await client.query(`UPDATE vehicles SET availability_status='available' WHERE id=$1`, [booking.vehicle_id]);
+      await client.query("UPDATE bookings SET status='cancelled' WHERE id=$1", [bookingId]);
+      await client.query("UPDATE vehicles SET availability_status='available' WHERE id=$1", [booking.vehicle_id]);
       await client.query("COMMIT");
       return { success: true };
     } catch (err) {
@@ -70,15 +70,15 @@ export class BookingsService {
   }
 
   static async markReturned(bookingId: number) {
-    const r = await pool.query(`SELECT * FROM bookings WHERE id=$1`, [bookingId]);
+    const r = await pool.query("SELECT * FROM bookings WHERE id=$1", [bookingId]);
     if (!r.rows.length) throw new Error("Booking not found");
     const booking = r.rows[0];
 
     const client = await pool.connect();
     try {
       await client.query("BEGIN");
-      await client.query(`UPDATE bookings SET status='returned' WHERE id=$1`, [bookingId]);
-      await client.query(`UPDATE vehicles SET availability_status='available' WHERE id=$1`, [booking.vehicle_id]);
+      await client.query("UPDATE bookings SET status='returned' WHERE id=$1", [bookingId]);
+      await client.query("UPDATE vehicles SET availability_status='available' WHERE id=$1", [booking.vehicle_id]);
       await client.query("COMMIT");
       return { success: true };
     } catch (err) {

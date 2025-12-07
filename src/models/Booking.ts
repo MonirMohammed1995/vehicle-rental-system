@@ -1,12 +1,12 @@
-export type BookingStatus = "active" | "cancelled" | "returned";
+export type VehicleType = "car" | "bike" | "van" | "SUV";
+export type Availability = "available" | "booked";
 
-export interface Booking {
+export interface Vehicle {
   id: number;
-  customer_id: number;
-  vehicle_id: number;
-  rent_start_date: string;
-  rent_end_date: string;
-  total_price: number;
-  status: BookingStatus;
+  vehicle_name: string;
+  type: VehicleType;
+  registration_number: string;
+  daily_rent_price: number;
+  availability_status: Availability;
   created_at?: string;
 }

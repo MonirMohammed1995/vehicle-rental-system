@@ -8,5 +8,4 @@ router.get("/", authMiddleware, authorize(["admin"]), listUsers);
 router.get("/me", authMiddleware, getMe);
 router.put("/:userId", authMiddleware, updateUser);
 router.delete("/:userId", authMiddleware, authorize(["admin"]), deleteUser);
-
 export default router;

@@ -10,12 +10,12 @@ export class VehiclesService {
   }
 
   static async list() {
-    const r = await pool.query(`SELECT * FROM vehicles ORDER BY id`);
+    const r = await pool.query("SELECT * FROM vehicles ORDER BY id");
     return r.rows;
   }
 
   static async getById(id: number) {
-    const r = await pool.query(`SELECT * FROM vehicles WHERE id=$1`, [id]);
+    const r = await pool.query("SELECT * FROM vehicles WHERE id=$1", [id]);
     if (!r.rows.length) throw new Error("Vehicle not found");
     return r.rows[0];
   }
@@ -38,6 +38,6 @@ export class VehiclesService {
   }
 
   static async remove(id: number) {
-    await pool.query(`DELETE FROM vehicles WHERE id=$1`, [id]);
+    await pool.query("DELETE FROM vehicles WHERE id=$1", [id]);
   }
 }
