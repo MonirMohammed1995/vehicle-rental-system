@@ -9,7 +9,7 @@ export interface JwtPayload {
 
 export const signJwt = (payload: JwtPayload, expiresIn = "1d"): string => {
   if (!ENV.JWT_SECRET) throw new Error("JWT_SECRET is missing");
-  return jwt.sign(payload, ENV.JWT_SECRET as string, { expiresIn });
+  return jwt.sign(payload, ENV.JWT_SECRET as string, { expiresIn:'1d' });
 };
 
 export const verifyJwt = (token: string): JwtPayload => {

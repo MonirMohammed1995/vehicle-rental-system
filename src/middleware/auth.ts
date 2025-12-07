@@ -1,22 +1,28 @@
 import { Request, Response, NextFunction } from "express";
-import { verifyJwt } from "../utils/jwt";
+import { verifyJwt, JwtPayload } from "../utils/jwt";
 
 export interface AuthRequest extends Request {
-  user?: { id: number; email: string; role: string };
+  user?: JwtPayload;
 }
 
 export const authMiddleware = (req: AuthRequest, res: Response, next: NextFunction) => {
   const header = req.header("Authorization");
-  if (!header) return res.status(401).json({ message: "Missing Authorization header" });
+  if (!header) return res.status(401).json({ success: false, message: "Missing Authorization header" });
 
-  const [scheme, token] = header.split(" ");
-  if (scheme !== "Bearer" || !token) return res.status(401).json({ message: "Invalid Authorization format" });
+  const parts = header.split(" ");
+  if (parts.length !== 2 || parts[0] !== "Bearer") return res.status(401).json({ success: false, message: "Invalid Authorization format" });
 
-  try {
-    const payload = verifyJwt(token);
-    req.user = { id: payload.id, email: payload.email, role: payload.role };
-    next();
-  } catch (err) {
-    return res.status(401).json({ message: "Invalid or expired token" });
-  }
+  const token = parts[1];
+if (!token) {
+  return res.status(401).json({ success: false, message: "Token missing" });
+}
+
+try {
+  const payload = verifyJwt(token);
+  req.user = payload;
+  next();
+} catch (err) {
+  return res.status(401).json({ success: false, message: "Invalid or expired token" });
+}
+
 };
